@@ -1,0 +1,38 @@
+version: 0.2
+
+# Main pipeline build: quality gate -> build/push image -> emit deploy artifacts.
+phases:
+  install:
+    runtime-versions:
+      python: 3.12
+    commands:
+      - python -m pip install --upgrade pip
+      - pip install -r requirements-dev.txt
+
+  pre_build:
+    commands:
+      - echo "----- Quality gate -----"
+      - ruff check .
+      - ruff format --check .
+      - pytest # enforces --cov-fail-under=80 (see pyproject.toml)
+      - echo "----- ECR login -----"
+      - aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$ECR_REPO_URL"
+      - IMAGE_TAG="${CODEBUILD_RESOLVED_SOURCE_VERSION:-latest}"
+      - IMAGE_URI="$ECR_REPO_URL:$IMAGE_TAG"
+      - echo "Building $IMAGE_URI"
+
+  build:
+    commands:
+      - docker build -t "$IMAGE_URI" -t "$ECR_REPO_URL:latest" .
+
+  post_build:
+    commands:
+      - docker push "$IMAGE_URI"
+      - docker push "$ECR_REPO_URL:latest"
+      - echo "----- Rendering image definitions -----"
+      - printf '[{"name":"%s","imageUri":"%s"}]' "$CONTAINER_NAME" "$IMAGE_URI" > imagedefinitions.json
+      - cat imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
