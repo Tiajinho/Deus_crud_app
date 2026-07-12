@@ -1,0 +1,12 @@
+aws_region    = "us-east-1"
+project_name  = "python-crud-cloud"
+environment   = "dev"
+
+# GitHub source for CodePipeline / CodeBuild
+github_owner  = "your-github-username"
+github_repo   = "python-crud-cloud"
+github_branch = "main"
+
+# Optional: provide a GitHub Personal Access Token (repo + admin:repo_hook scopes)
+# to enable the pull-request quality-gate CodeBuild webhook. Leave empty to skip.
+# github_token = "ghp_xxxxxxxxxxxxxxxxxxxx"
