@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.db
+
+# Test / coverage
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+
+# Packaging
+dist/
+build/
+*.egg-info/
+
+# Terraform
+infra/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+!*.tfvars.example
+tfplan*
+*.tfplan
+
+# OS / editor
+.DS_Store
+
+# Scratch / handoff notes (not part of the deliverable)
+SESSION_HANDOFF.md
